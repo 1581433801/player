@@ -3,6 +3,7 @@ import KeypointList from './components/KeypointList.vue'
 import Player from 'xgplayer'
 import { onMounted } from 'vue'
 import 'xgplayer/dist/index.min.css'
+import { getPointList } from '@/api/home'
 onMounted(() => {
   const playerDom = document.querySelector('.player')
   let player = new Player({
@@ -16,6 +17,10 @@ onMounted(() => {
     fluid: true,
     fullscreenTarget: playerDom as HTMLElement
   })
+})
+onMounted(async () => {
+  const res = await getPointList()
+  console.log(res)
 })
 </script>
 
