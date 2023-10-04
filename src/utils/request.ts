@@ -31,17 +31,12 @@ instance.interceptors.response.use(
 )
 export default instance
 
-type Data<T> = {
-  error_code: number
-  reason: string
-  result: T
-}
 export const request = <T>(
   url: string,
   method: Method = 'GET',
   submitData?: object
 ) => {
-  return instance.request<any, Data<T>>({
+  return instance.request<any, T>({
     url,
     method,
     [method.toUpperCase() === 'GET' ? 'params' : 'data']: submitData

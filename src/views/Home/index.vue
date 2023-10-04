@@ -4,11 +4,12 @@ import Player from 'xgplayer'
 import { onMounted } from 'vue'
 import 'xgplayer/dist/index.min.css'
 import { getPointList } from '@/api/home'
-onMounted(() => {
+onMounted(async () => {
+  const res = await getPointList()
   const playerDom = document.querySelector('.player')
   let player = new Player({
     id: 'mse',
-    url: 'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4',
+    url: res.url,
     videoInit: true,
     closeInactive: false,
     autoplay: true,
@@ -18,10 +19,7 @@ onMounted(() => {
     fullscreenTarget: playerDom as HTMLElement
   })
 })
-onMounted(async () => {
-  const res = await getPointList()
-  console.log(res)
-})
+onMounted(async () => {})
 </script>
 
 <template>
