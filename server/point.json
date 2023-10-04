@@ -1,0 +1,36 @@
+{
+  "title": "示例视频",
+  "url": "https://example.com/video.mp4",
+  "keypointList": [
+    {
+      "name": "看点1",
+      "startTime": 10,
+      "endTime": 20
+    },
+    {
+      "name": "看点2",
+      "startTime": 30,
+      "endTime": 40
+    },
+    {
+      "name": "看点3",
+      "startTime": 50,
+      "endTime": 60
+    },
+    {
+      "name": "看点4",
+      "startTime": 70,
+      "endTime": 80
+    },
+    {
+      "name": "看点5",
+      "startTime": 90,
+      "endTime": 100
+    },
+    {
+      "name": "看点6",
+      "startTime": 110,
+      "endTime": 120
+    }
+  ]
+}
