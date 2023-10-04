@@ -1,22 +1,26 @@
-<template>
-  <div v-if="isCollapsed" class="keypoint-list">
-    <i @click="toggleCollapse" class="toggleButton iconfont icon-zhedie2"></i>
-    <ul>
-      <!-- ... 看点列表 -->
-    </ul>
-  </div>
-  <i v-else @click="toggleCollapse" class="showList iconfont icon-zhedie1"></i>
-</template>
-
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { PointItem } from '@/types/home'
 
+defineProps<{
+  pointList: PointItem[]
+}>()
 const isCollapsed = ref(false) // 控制折叠状态的变量
 
 function toggleCollapse() {
   isCollapsed.value = !isCollapsed.value // 切换折叠状态
 }
 </script>
+<template>
+  <div v-if="isCollapsed" class="keypoint-list">
+    <i @click="toggleCollapse" class="toggleButton iconfont icon-zhedie2"></i>
+    <!-- TODO: 封装一个列表项组件 -->
+    <ul>
+      <li v-for="item in pointList" :key="item.startTime">{{ item.name }}</li>
+    </ul>
+  </div>
+  <i v-else @click="toggleCollapse" class="showList iconfont icon-zhedie1"></i>
+</template>
 
 <style scoped>
 .keypoint-list {

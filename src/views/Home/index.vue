@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import KeypointList from './components/KeypointList.vue'
 import Player from 'xgplayer'
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import 'xgplayer/dist/index.min.css'
+import type { PointItem } from '@/types/home'
 import { getPointList } from '@/api/home'
+const pointList = ref<PointItem[]>([])
 onMounted(async () => {
   const res = await getPointList()
+  pointList.value = res.keypointList
   const playerDom = document.querySelector('.player')
-  let player = new Player({
+  // let player = new Player({
+  new Player({
     id: 'mse',
     url: res.url,
     videoInit: true,
@@ -19,13 +23,12 @@ onMounted(async () => {
     fullscreenTarget: playerDom as HTMLElement
   })
 })
-onMounted(async () => {})
 </script>
 
 <template>
   <div class="page">
     <div class="player">
-      <KeypointList />
+      <KeypointList :point-list="pointList" />
       <div id="mse"></div>
     </div>
   </div>
