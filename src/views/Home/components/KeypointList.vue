@@ -14,9 +14,19 @@ function toggleCollapse() {
 <template>
   <div v-if="isCollapsed" class="keypoint-list">
     <i @click="toggleCollapse" class="toggleButton iconfont icon-zhedie2"></i>
-    <!-- TODO: 封装一个列表项组件 -->
-    <ul>
-      <li v-for="item in pointList" :key="item.startTime">{{ item.name }}</li>
+    <!-- TODO: 未来需要封装一个列表项组件 -->
+    <ul
+      style="
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      "
+    >
+      <li class="pointItem" v-for="item in pointList" :key="item.startTime">
+        {{ item.name }}
+      </li>
     </ul>
   </div>
   <i v-else @click="toggleCollapse" class="showList iconfont icon-zhedie1"></i>
@@ -30,17 +40,17 @@ function toggleCollapse() {
   top: 0;
   right: 0;
   z-index: 100;
-  background-color: rgba(0, 0, 0, 0.7); /* 半透明背景 */
+  background-color: rgba(0, 0, 0, 0); /* 半透明背景 */
   .toggleButton {
     cursor: pointer;
     margin-left: 10px;
     padding: 10px;
     border-radius: 20px;
-    background-color: rgba(225, 211, 211, 0.1);
+    background-color: rgba(225, 211, 211, 0);
     font-size: 25px;
     color: #ffffff;
     position: absolute;
-    top: 50%;
+    top: 48%;
     &:hover {
       background-color: rgba(225, 211, 211, 0.3);
     }
@@ -61,6 +71,21 @@ function toggleCollapse() {
   z-index: 10;
   &:hover {
     background-color: rgba(225, 211, 211, 0.3);
+  }
+}
+.pointItem {
+  width: 100%;
+  height: 66px;
+  text-align: center;
+  cursor: pointer;
+  color: #d1d1d1;
+  font-size: 20px;
+  line-height: 66px;
+  transition: all 0.3s ease;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+    font-size: 24px;
+    color: #fff;
   }
 }
 </style>
