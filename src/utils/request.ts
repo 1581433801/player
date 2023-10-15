@@ -19,7 +19,7 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (res) => {
     // TODO 3. 处理业务失败
-    if (!(res.data?.reason === 'success!')) {
+    if (!(res.data?.status === 'success')) {
       return Promise.reject(res.data)
     }
     // TODO 4. 摘取核心响应数据

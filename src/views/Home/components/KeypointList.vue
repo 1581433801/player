@@ -5,10 +5,17 @@ import type { PointItem } from '@/types/home'
 defineProps<{
   pointList: PointItem[]
 }>()
-const isCollapsed = ref(false) // 控制折叠状态的变量
+const emit = defineEmits<{
+  (event: 'updateCurrType', payload: string): void
+}>()
+const isCollapsed = ref(true) // 控制折叠状态的变量
 
 function toggleCollapse() {
   isCollapsed.value = !isCollapsed.value // 切换折叠状态
+}
+const onClickPoint = (type: string) => {
+  // 当用户点击看点时，触发自定义事件，并将需要的类型作为payload传递给父组件
+  emit('updateCurrType', type)
 }
 </script>
 <template>
@@ -24,8 +31,13 @@ function toggleCollapse() {
         align-items: center;
       "
     >
-      <li class="pointItem" v-for="item in pointList" :key="item.startTime">
-        {{ item.name }}
+      <li
+        class="pointItem"
+        v-for="item in pointList"
+        :key="item.timestamps?.start"
+        @click="onClickPoint(item.type)"
+      >
+        {{ item.description }}
       </li>
     </ul>
   </div>
@@ -40,13 +52,13 @@ function toggleCollapse() {
   top: 0;
   right: 0;
   z-index: 100;
-  background-color: rgba(0, 0, 0, 0); /* 半透明背景 */
+  background-color: rgba(0, 0, 0, 0.3); /* 半透明背景 */
   .toggleButton {
     cursor: pointer;
     margin-left: 10px;
     padding: 10px;
     border-radius: 20px;
-    background-color: rgba(225, 211, 211, 0);
+    background-color: rgba(225, 211, 211, 0.3);
     font-size: 25px;
     color: #ffffff;
     position: absolute;

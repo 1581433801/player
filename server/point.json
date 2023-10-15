@@ -1,37 +1,33 @@
 {
-  "reason": "success!",
-  "title": "国际友谊赛",
-  "url": "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
-  "keypointList": [
+  "status": "success",
+  "title": "混合媒体展示",
+  "mediaUrl": "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
+  "keypoints": [
     {
-      "name": "开场10分钟进球",
-      "startTime": 10,
-      "endTime": 20
+      "type": "video",
+      "description": "连续射门机会",
+      "timestamps": {
+        "start": 30,
+        "end": 40
+      }
     },
     {
-      "name": "连续射门机会",
-      "startTime": 30,
-      "endTime": 40
+      "type": "image",
+      "description": "球场全景",
+      "url": "https://example.com/image2.jpg"
     },
     {
-      "name": "一张黄牌出现",
-      "startTime": 50,
-      "endTime": 60
+      "type": "video",
+      "description": "比赛时刻绝杀",
+      "timestamps": {
+        "start": 110,
+        "end": 120
+      }
     },
     {
-      "name": "半场结束0-1",
-      "startTime": 70,
-      "endTime": 80
-    },
-    {
-      "name": "扳平1-1比分",
-      "startTime": 90,
-      "endTime": 100
-    },
-    {
-      "name": "比赛时刻绝杀",
-      "startTime": 110,
-      "endTime": 120
+      "type": "image",
+      "description": "观众欢呼",
+      "url": "https://example.com/image3.jpg"
     }
   ]
 }
