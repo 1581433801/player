@@ -2,7 +2,12 @@
 
 <template>
   <div class="image-player">
-    <el-carousel height="800px" arrow="never" indicator-position="outside">
+    <el-carousel
+      :autoplay="false"
+      height="800px"
+      arrow="never"
+      indicator-position="none"
+    >
       <el-carousel-item v-for="item in 4" :key="item">
         <img
           style="width: 100%; height: 100%"

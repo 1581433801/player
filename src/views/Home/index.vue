@@ -2,17 +2,18 @@
 import KeypointList from './components/KeypointList.vue'
 import ImagePlayer from './components/ImagePlayer.vue'
 import Player from 'xgplayer'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import 'xgplayer/dist/index.min.css'
 import type { PointItem } from '@/types/home'
 import { getPointList } from '@/api/home'
 const pointList = ref<PointItem[]>([])
+let player: any
 onMounted(async () => {
   const res = await getPointList()
   pointList.value = res.keypoints
   const playerDom = document.querySelector('.player')
   // let player = new Player({
-  new Player({
+  player = new Player({
     id: 'mse',
     url: res.mediaUrl,
     videoInit: true,
@@ -22,11 +23,31 @@ onMounted(async () => {
     ignores: ['cssfullscreen'],
     fullscreenTarget: playerDom as HTMLElement,
     height: 800,
-    width: '100%'
+    width: '100%',
+    progressDot: [
+      {
+        id: 0, // 唯一标识，用于删除的时候索引
+        time: 2, // 展示的时间点，例子为在播放到10s钟的时候展示
+        text: 'Demo', // hover的时候展示文案，可以为空
+        duration: 1, // 展示时间跨度，单位为s
+        style: {
+          // 指定样式
+          backgroundColor: 'green'
+        }
+      }
+    ]
   })
 })
 // 当前资源类型
 const currType = ref<string>('video')
+watch(currType, (newType, oldType) => {
+  console.log('检测到变动')
+  if (newType === 'image' && player) {
+    player.pause()
+  } else if (newType === 'video' && player) {
+    player.play()
+  }
+})
 // 自定义事件修改父组件中的currType值\
 const handleUpdateCurrType = (type: string) => {
   console.log(type)

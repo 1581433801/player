@@ -1,7 +1,7 @@
 {
   "status": "success",
   "title": "混合媒体展示",
-  "mediaUrl": "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4",
+  "mediaUrl": "https://sample-videos.com/video123/mp4/480/big_buck_bunny_480p_20mb.mp4",
   "keypoints": [
     {
       "type": "video",
