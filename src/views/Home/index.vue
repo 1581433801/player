@@ -19,6 +19,7 @@ onMounted(async () => {
     videoInit: true,
     closeInactive: false,
     autoplay: true,
+    videoFillMode: 'cover',
     loop: true,
     ignores: ['cssfullscreen'],
     fullscreenTarget: playerDom as HTMLElement,
@@ -27,17 +28,55 @@ onMounted(async () => {
     progressDot: [
       {
         id: 0, // 唯一标识，用于删除的时候索引
-        time: 2, // 展示的时间点，例子为在播放到10s钟的时候展示
-        text: 'Demo', // hover的时候展示文案，可以为空
-        duration: 1, // 展示时间跨度，单位为s
+        time: 30, // 展示的时间点，例子为在播放到10s钟的时候展示
+        text: '连续射门机会', // hover的时候展示文案，可以为空
+        duration: 10, // 展示时间跨度，单位为s
         style: {
           // 指定样式
-          backgroundColor: 'green'
+          fontSize: '30px',
+          backgroundColor: 'orange'
+        }
+      },
+      {
+        id: 0, // 唯一标识，用于删除的时候索引
+        time: 60, // 展示的时间点，例子为在播放到10s钟的时候展示
+        text: '比赛时刻绝杀', // hover的时候展示文案，可以为空
+        duration: 10, // 展示时间跨度，单位为s
+        style: {
+          // 指定样式
+          backgroundColor: 'orange'
+        }
+      },
+      {
+        id: 0, // 唯一标识，用于删除的时候索引
+        time: 90, // 展示的时间点，例子为在播放到10s钟的时候展示
+        text: '观众欢呼', // hover的时候展示文案，可以为空
+        duration: 5, // 展示时间跨度，单位为s
+        style: {
+          // 指定样式
+          backgroundColor: 'orange'
         }
       }
     ]
   })
+  // 监听播放
+  trackPlaybackProgress()
 })
+// ...其他代码
+const highlightKeypoint = ref<number | null>(null) // 高亮看点索引
+const trackPlaybackProgress = () => {
+  player.on('timeupdate', () => {
+    console.log(111333)
+    const index = pointList.value.findIndex(
+      (item) =>
+        item.timestamps &&
+        player.currentTime >= item.timestamps.start &&
+        player.currentTime <= item.timestamps.end
+    )
+    if (currType.value !== 'image') highlightKeypoint.value = index
+    console.log(highlightKeypoint.value)
+  })
+}
 // 当前资源类型
 const currType = ref<string>('video')
 watch(currType, (newType, oldType) => {
@@ -49,9 +88,14 @@ watch(currType, (newType, oldType) => {
   }
 })
 // 自定义事件修改父组件中的currType值\
-const handleUpdateCurrType = (type: string) => {
-  console.log(type)
-  currType.value = type
+const handleUpdateCurrType = async (point: PointItem & { index: number }) => {
+  console.log('666')
+  highlightKeypoint.value = point.index
+  currType.value = point.type
+  if (point.type === 'video' && player) {
+    player.currentTime = point.timestamps?.start
+    // 其他逻辑...
+  }
 }
 </script>
 
@@ -59,6 +103,7 @@ const handleUpdateCurrType = (type: string) => {
   <div class="page">
     <div class="player">
       <KeypointList
+        :highlight-keypoint="highlightKeypoint"
         @updateCurrType="handleUpdateCurrType"
         :point-list="pointList"
       />

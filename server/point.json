@@ -20,14 +20,17 @@
       "type": "video",
       "description": "比赛时刻绝杀",
       "timestamps": {
-        "start": 110,
-        "end": 120
+        "start": 60,
+        "end": 70
       }
     },
     {
-      "type": "image",
+      "type": "video",
       "description": "观众欢呼",
-      "url": "https://example.com/image3.jpg"
+      "timestamps": {
+        "start": 90,
+        "end": 95
+      }
     }
   ]
 }

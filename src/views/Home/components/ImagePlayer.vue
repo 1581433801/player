@@ -1,12 +1,23 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from 'vue'
+
+const carouselRef = ref()
+const onPrevious = () => {
+  carouselRef.value.prev()
+}
+const onNext = () => {
+  carouselRef.value.next()
+}
+</script>
 
 <template>
   <div class="image-player">
     <el-carousel
+      ref="carouselRef"
       :autoplay="false"
       height="800px"
       arrow="never"
-      indicator-position="none"
+      style="margin-bottom: 10px"
     >
       <el-carousel-item v-for="item in 4" :key="item">
         <img
@@ -15,6 +26,8 @@
         />
       </el-carousel-item>
     </el-carousel>
+    <el-button type="info" @click="onPrevious">Prev</el-button>
+    <el-button type="info" @click="onNext">Next</el-button>
   </div>
 </template>
 

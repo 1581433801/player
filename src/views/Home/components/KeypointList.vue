@@ -2,20 +2,21 @@
 import { ref } from 'vue'
 import type { PointItem } from '@/types/home'
 
-defineProps<{
+const { highlightKeypoint, pointList } = defineProps<{
+  highlightKeypoint: number | null
   pointList: PointItem[]
 }>()
 const emit = defineEmits<{
-  (event: 'updateCurrType', payload: string): void
+  (event: 'updateCurrType', payload: PointItem & { index: number }): void
 }>()
 const isCollapsed = ref(true) // 控制折叠状态的变量
 
 function toggleCollapse() {
   isCollapsed.value = !isCollapsed.value // 切换折叠状态
 }
-const onClickPoint = (type: string) => {
+const onClickPoint = (point: PointItem & { index: number }) => {
   // 当用户点击看点时，触发自定义事件，并将需要的类型作为payload传递给父组件
-  emit('updateCurrType', type)
+  emit('updateCurrType', point)
 }
 </script>
 <template>
@@ -33,9 +34,10 @@ const onClickPoint = (type: string) => {
     >
       <li
         class="pointItem"
-        v-for="item in pointList"
+        v-for="(item, index) in pointList"
         :key="item.timestamps?.start"
-        @click="onClickPoint(item.type)"
+        @click="onClickPoint({ ...item, index: index })"
+        :class="{ 'pointItem-highlight': index === highlightKeypoint }"
       >
         {{ item.description }}
       </li>
@@ -44,7 +46,7 @@ const onClickPoint = (type: string) => {
   <i v-else @click="toggleCollapse" class="showList iconfont icon-zhedie1"></i>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .keypoint-list {
   position: absolute;
   width: 280px;
@@ -94,10 +96,10 @@ const onClickPoint = (type: string) => {
   font-size: 20px;
   line-height: 66px;
   transition: all 0.3s ease;
-  &:hover {
+  &-highlight {
     background-color: rgba(0, 0, 0, 0.4);
     font-size: 24px;
-    color: #fff;
+    color: orange;
   }
 }
 </style>
