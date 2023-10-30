@@ -1,31 +1,62 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import type { PointItem } from '@/types/home'
 
-const { highlightKeypoint, pointList } = defineProps<{
-  highlightKeypoint: number | null
-  pointList: PointItem[]
+const props = defineProps<{
+  highlightKeypoint: number | null // 当前需要高亮的看点下标
+  pointList: PointItem[] // 传入需要渲染的列表
 }>()
+// 更新当前看点类型(视频 or 图片)的事件
 const emit = defineEmits<{
   (event: 'updateCurrType', payload: PointItem & { index: number }): void
 }>()
-const isCollapsed = ref(true) // 控制折叠状态的变量
-
-function toggleCollapse() {
-  isCollapsed.value = !isCollapsed.value // 切换折叠状态
-}
+// 点击响应看点时触发上述事件
 const onClickPoint = (point: PointItem & { index: number }) => {
   // 当用户点击看点时，触发自定义事件，并将需要的类型作为payload传递给父组件
   emit('updateCurrType', point)
 }
+const container = ref<HTMLDivElement>()
+const ul = ref<HTMLUListElement>()
+// 容器高度
+let containerHeight: any
+// 每个 li 的高度
+let liHeight: any
+// 最大偏移量
+let maxOffset: any
+
+onMounted(() => {
+  containerHeight = container.value!.clientHeight
+  liHeight = ul.value!.children[0].clientHeight
+  maxOffset = ul.value!.clientHeight - containerHeight
+})
+// 判断是否是首次
+const isInit = ref(true)
+watch(
+  computed(() => props.highlightKeypoint),
+  () => {
+    console.log('检测到当前看点变化')
+    if (props.highlightKeypoint === -1 && isInit.value) {
+      let offsetValue =
+        props.highlightKeypoint * liHeight + liHeight / 2 - containerHeight / 2
+      ul.value.style.transform = `translateY(${-offsetValue}px)`
+
+      isInit.value = false
+    } else {
+      if (props.highlightKeypoint === -1) return
+      let offsetValue =
+        props.highlightKeypoint * liHeight + liHeight / 2 - containerHeight / 2
+      ul.value.style.transform = `translateY(${-offsetValue}px)`
+    }
+  }
+)
 </script>
 <template>
-  <div v-if="isCollapsed" class="keypoint-list">
-    <i @click="toggleCollapse" class="toggleButton iconfont icon-zhedie2"></i>
+  <div ref="container" class="keypoint-list">
+    <!-- <i @click="toggleCollapse" class="toggleButton iconfont icon-zhedie2"></i> -->
     <!-- TODO: 未来需要封装一个列表项组件 -->
     <ul
+      ref="ul"
       style="
-        height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -37,23 +68,23 @@ const onClickPoint = (point: PointItem & { index: number }) => {
         v-for="(item, index) in pointList"
         :key="item.timestamps?.start"
         @click="onClickPoint({ ...item, index: index })"
-        :class="{ 'pointItem-highlight': index === highlightKeypoint }"
+        :class="{ 'pointItem-highlight': index === props.highlightKeypoint }"
       >
         {{ item.description }}
       </li>
     </ul>
   </div>
-  <i v-else @click="toggleCollapse" class="showList iconfont icon-zhedie1"></i>
 </template>
 
 <style scoped lang="scss">
 .keypoint-list {
   position: absolute;
   width: 280px;
-  height: 100%;
-  top: 0;
+  height: 80%;
+  top: 80px;
   right: 0;
   z-index: 100;
+  overflow: hidden;
   background-color: rgba(0, 0, 0, 0.3); /* 半透明背景 */
   .toggleButton {
     cursor: pointer;
@@ -89,7 +120,7 @@ const onClickPoint = (point: PointItem & { index: number }) => {
 }
 .pointItem {
   width: 100%;
-  height: 66px;
+  height: 58.18px;
   text-align: center;
   cursor: pointer;
   color: #d1d1d1;

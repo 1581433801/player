@@ -5,30 +5,129 @@
   "keypoints": [
     {
       "type": "video",
-      "description": "连续射门机会",
+      "description": "1 连续射门机会",
       "timestamps": {
-        "start": 30,
-        "end": 40
-      }
-    },
-    {
-      "type": "image",
-      "description": "球场全景",
-      "url": "https://example.com/image2.jpg"
-    },
-    {
-      "type": "video",
-      "description": "比赛时刻绝杀",
-      "timestamps": {
-        "start": 60,
-        "end": 70
+        "start": 2,
+        "end": 5
       }
     },
     {
       "type": "video",
-      "description": "观众欢呼",
+      "description": "2 比赛时刻绝杀",
       "timestamps": {
-        "start": 90,
+        "start": 6,
+        "end": 8
+      }
+    },
+    {
+      "type": "video",
+      "description": "3 观众欢呼",
+      "timestamps": {
+        "start": 9,
+        "end": 11
+      }
+    },
+    {
+      "type": "video",
+      "description": "4 连续射门机会",
+      "timestamps": {
+        "start": 12,
+        "end": 14
+      }
+    },
+    {
+      "type": "video",
+      "description": "5 比赛时刻绝杀",
+      "timestamps": {
+        "start": 26,
+        "end": 29
+      }
+    },
+    {
+      "type": "video",
+      "description": "6 观众欢呼",
+      "timestamps": {
+        "start": 32,
+        "end": 35
+      }
+    },
+    {
+      "type": "video",
+      "description": "7 连续射门机会",
+      "timestamps": {
+        "start": 38,
+        "end": 41
+      }
+    },
+    {
+      "type": "video",
+      "description": "8 比赛时刻绝杀",
+      "timestamps": {
+        "start": 44,
+        "end": 47
+      }
+    },
+    {
+      "type": "video",
+      "description": "9 观众欢呼",
+      "timestamps": {
+        "start": 50,
+        "end": 53
+      }
+    },
+    {
+      "type": "video",
+      "description": "10 连续射门机会",
+      "timestamps": {
+        "start": 56,
+        "end": 59
+      }
+    },
+    {
+      "type": "video",
+      "description": "11 比赛时刻绝杀",
+      "timestamps": {
+        "start": 62,
+        "end": 65
+      }
+    },
+    {
+      "type": "video",
+      "description": "12 观众欢呼",
+      "timestamps": {
+        "start": 68,
+        "end": 71
+      }
+    },
+    {
+      "type": "video",
+      "description": "13 观众欢呼",
+      "timestamps": {
+        "start": 74,
+        "end": 77
+      }
+    },
+    {
+      "type": "video",
+      "description": "14 观众欢呼",
+      "timestamps": {
+        "start": 80,
+        "end": 83
+      }
+    },
+    {
+      "type": "video",
+      "description": "15 观众欢呼",
+      "timestamps": {
+        "start": 86,
+        "end": 89
+      }
+    },
+    {
+      "type": "video",
+      "description": "16 观众欢呼",
+      "timestamps": {
+        "start": 92,
         "end": 95
       }
     }

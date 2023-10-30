@@ -66,13 +66,14 @@ onMounted(async () => {
 const highlightKeypoint = ref<number | null>(null) // 高亮看点索引
 const trackPlaybackProgress = () => {
   player.on('timeupdate', () => {
-    console.log(111333)
+    console.log('监听到播放器timeupdate')
     const index = pointList.value.findIndex(
       (item) =>
         item.timestamps &&
         player.currentTime >= item.timestamps.start &&
         player.currentTime <= item.timestamps.end
     )
+    console.log('计算得到的当前下标', index)
     if (currType.value !== 'image') highlightKeypoint.value = index
     console.log(highlightKeypoint.value)
   })
@@ -89,7 +90,7 @@ watch(currType, (newType, oldType) => {
 })
 // 自定义事件修改父组件中的currType值\
 const handleUpdateCurrType = async (point: PointItem & { index: number }) => {
-  console.log('666')
+  console.log(point)
   highlightKeypoint.value = point.index
   currType.value = point.type
   if (point.type === 'video' && player) {
@@ -103,6 +104,7 @@ const handleUpdateCurrType = async (point: PointItem & { index: number }) => {
   <div class="page">
     <div class="player">
       <KeypointList
+        v-if="pointList.length"
         :highlight-keypoint="highlightKeypoint"
         @updateCurrType="handleUpdateCurrType"
         :point-list="pointList"
@@ -120,6 +122,7 @@ const handleUpdateCurrType = async (point: PointItem & { index: number }) => {
   display: flex;
   justify-content: center;
   .player {
+    display: flex;
     margin-top: 50px;
     width: 74%;
     height: 800px;
