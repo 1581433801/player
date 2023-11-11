@@ -1,86 +1,235 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
-import type { PointItem } from '@/types/home'
-
-const props = defineProps<{
-  highlightKeypoint: number | null // 当前需要高亮的看点下标
-  pointList: PointItem[] // 传入需要渲染的列表
-}>()
-// 更新当前看点类型(视频 or 图片)的事件
-const emit = defineEmits<{
-  (event: 'updateCurrType', payload: PointItem & { index: number }): void
-}>()
-// 点击响应看点时触发上述事件
-const onClickPoint = (point: PointItem & { index: number }) => {
-  // 当用户点击看点时，触发自定义事件，并将需要的类型作为payload传递给父组件
-  emit('updateCurrType', point)
-}
-const container = ref<HTMLDivElement>()
-const ul = ref<HTMLUListElement>()
-// 容器高度
-let containerHeight: any
-// 每个 li 的高度
-let liHeight: any
-// 最大偏移量
-let maxOffset: any
-
-onMounted(() => {
-  containerHeight = container.value!.clientHeight
-  liHeight = ul.value!.children[0].clientHeight
-  maxOffset = ul.value!.clientHeight - containerHeight
-})
-// 判断是否是首次
-const isInit = ref(true)
-watch(
-  computed(() => props.highlightKeypoint),
-  () => {
-    console.log('检测到当前看点变化')
-    if (props.highlightKeypoint === -1 && isInit.value) {
-      let offsetValue =
-        props.highlightKeypoint * liHeight + liHeight / 2 - containerHeight / 2
-      ul.value.style.transform = `translateY(${-offsetValue}px)`
-
-      isInit.value = false
-    } else {
-      if (props.highlightKeypoint === -1) return
-      let offsetValue =
-        props.highlightKeypoint * liHeight + liHeight / 2 - containerHeight / 2
-      ul.value.style.transform = `translateY(${-offsetValue}px)`
+import { computed, ref } from 'vue'
+const playlistData = {
+  status: 'success',
+  title: '混合媒体展示',
+  mediaUrl:
+    'https://sample-videos.com/video123/mp4/480/big_buck_bunny_480p_20mb.mp4',
+  keypoints: [
+    {
+      type: 'video',
+      description: '1 连续射门机会',
+      timestamps: {
+        start: 2,
+        end: 5
+      }
+    },
+    {
+      type: 'video',
+      description: '2 比赛时刻绝杀',
+      timestamps: {
+        start: 6,
+        end: 8
+      }
+    },
+    {
+      type: 'video',
+      description: '3 观众欢呼',
+      timestamps: {
+        start: 9,
+        end: 11
+      }
+    },
+    {
+      type: 'video',
+      description: '4 连续射门机会',
+      timestamps: {
+        start: 12,
+        end: 14
+      }
+    },
+    {
+      type: 'video',
+      description: '5 比赛时刻绝杀',
+      timestamps: {
+        start: 26,
+        end: 29
+      }
+    },
+    {
+      type: 'video',
+      description: '6 观众欢呼',
+      timestamps: {
+        start: 32,
+        end: 35
+      }
+    },
+    {
+      type: 'video',
+      description: '7 连续射门机会',
+      timestamps: {
+        start: 38,
+        end: 41
+      }
+    },
+    {
+      type: 'video',
+      description: '8 比赛时刻绝杀',
+      timestamps: {
+        start: 44,
+        end: 47
+      }
+    },
+    {
+      type: 'video',
+      description: '9 观众欢呼',
+      timestamps: {
+        start: 50,
+        end: 53
+      }
+    },
+    {
+      type: 'video',
+      description: '10 连续射门机会',
+      timestamps: {
+        start: 56,
+        end: 59
+      }
+    },
+    {
+      type: 'video',
+      description: '11 比赛时刻绝杀',
+      timestamps: {
+        start: 62,
+        end: 65
+      }
+    },
+    {
+      type: 'video',
+      description: '12 观众欢呼',
+      timestamps: {
+        start: 68,
+        end: 71
+      }
+    },
+    {
+      type: 'video',
+      description: '13 观众欢呼',
+      timestamps: {
+        start: 74,
+        end: 77
+      }
+    },
+    {
+      type: 'video',
+      description: '14 观众欢呼',
+      timestamps: {
+        start: 80,
+        end: 83
+      }
+    },
+    {
+      type: 'video',
+      description: '15 观众欢呼',
+      timestamps: {
+        start: 86,
+        end: 89
+      }
+    },
+    {
+      type: 'video',
+      description: '16 观众欢呼',
+      timestamps: {
+        start: 92,
+        end: 95
+      }
     }
+  ]
+}
+const playingIndex = ref(9) // 初始设置为第一个播放项
+const customLayerIndex = ref(3) // 默认为居中位置，即第四层
+// 定义计算属性
+const displayedPlaylist = computed(() => {
+  const totalItems = playlistData.keypoints.length
+  const listSize = 7 // 列表固定大小
+  let startIndex = playingIndex.value - customLayerIndex.value
+
+  // 允许列表的上方出现空位
+  startIndex = Math.max(-customLayerIndex.value, startIndex)
+  startIndex = Math.min(startIndex, totalItems - listSize)
+
+  // 如果startIndex为负，说明需要在列表上方留空
+  if (startIndex < 0) {
+    // 使用空对象来填充空位
+    const emptyItems = Array(-startIndex).fill({})
+    // 从playlistData中获取实际项并与空项合并
+    return [
+      ...emptyItems,
+      ...playlistData.keypoints.slice(0, listSize + startIndex)
+    ]
   }
-)
+
+  return playlistData.keypoints.slice(startIndex, startIndex + listSize)
+})
+const currentPlayingItem = computed(() => {
+  return playlistData.keypoints[playingIndex.value]
+})
+const handleDragStart = (e) => {
+  e.dataTransfer.setData('text/plain', customLayerIndex.value.toString())
+}
+
+const handleDrop = (e, newIndex) => {
+  e.preventDefault()
+  const oldIndex = parseInt(e.dataTransfer.getData('text/plain'))
+  if (oldIndex === customLayerIndex.value) {
+    customLayerIndex.value = newIndex
+  }
+}
+const draggingOverIndex = ref(-1) // 新增状态，-1表示没有拖拽
+const handleDragOver = (e, index) => {
+  e.preventDefault()
+  draggingOverIndex.value = index // 设置当前拖拽经过的索引
+}
+
+const handleDragLeave = () => {
+  draggingOverIndex.value = -1 // 重置拖拽索引
+}
 </script>
 <template>
   <div ref="container" class="keypoint-list">
-    <!-- <i @click="toggleCollapse" class="toggleButton iconfont icon-zhedie2"></i> -->
-    <!-- TODO: 未来需要封装一个列表项组件 -->
-    <ul
-      ref="ul"
-      style="
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-      "
-    >
+    <ul>
       <li
+        v-for="(item, index) in displayedPlaylist"
+        :key="index"
         class="pointItem"
-        v-for="(item, index) in pointList"
-        :key="item.timestamps?.start"
-        @click="onClickPoint({ ...item, index: index })"
-        :class="{ 'pointItem-highlight': index === props.highlightKeypoint }"
+        :class="{ 'drag-over': draggingOverIndex === index }"
+        @dragover="handleDragOver($event, index)"
+        @dragleave="handleDragLeave"
+        @drop="handleDrop($event, index)"
       >
-        {{ item.description }}
+        <div
+          :draggable="item === currentPlayingItem"
+          @dragstart="handleDragStart($event, index)"
+          :class="{
+            playing: item === currentPlayingItem,
+            draggable: item === currentPlayingItem
+          }"
+        >
+          {{ item.description }}
+        </div>
       </li>
     </ul>
   </div>
 </template>
 
 <style scoped lang="scss">
+.drag-over {
+  background-color: #e0f7fa; /* 您可以选择任意颜色 */
+}
+.draggable {
+  cursor: move; /* 改变光标样式为移动的图标 */
+  border: 1px dashed #aaa; /* 虚线边框 */
+  background-color: #f9f9f9; /* 轻微的背景色 */
+}
+.playing {
+  background-color: #e0f7fa; /* 浅蓝色背景 */
+  font-weight: bold; /* 字体加粗 */
+  color: #0d47a1; /* 深蓝色字体 */
+  margin: 2px 0; /* 添加一些外边距 */
+}
 .keypoint-list {
   position: absolute;
   width: 280px;
-  height: 80%;
   top: 80px;
   right: 0;
   z-index: 100;
