@@ -136,18 +136,16 @@ const playlistData = {
     }
   ]
 }
-const playingIndex = ref(9) // 初始设置为第一个播放项
-const customLayerIndex = ref(3) // 默认为居中位置，即第四层
+const playingIndex = ref(0) // 初始设置为第一个播放项, TODO 后续需要持久化
+const customLayerIndex = ref(3) // 当前播放项所在层级
 // 定义计算属性
 const displayedPlaylist = computed(() => {
   const totalItems = playlistData.keypoints.length
   const listSize = 7 // 列表固定大小
   let startIndex = playingIndex.value - customLayerIndex.value
-
   // 允许列表的上方出现空位
   startIndex = Math.max(-customLayerIndex.value, startIndex)
   startIndex = Math.min(startIndex, totalItems - listSize)
-
   // 如果startIndex为负，说明需要在列表上方留空
   if (startIndex < 0) {
     // 使用空对象来填充空位
@@ -158,25 +156,27 @@ const displayedPlaylist = computed(() => {
       ...playlistData.keypoints.slice(0, listSize + startIndex)
     ]
   }
-
   return playlistData.keypoints.slice(startIndex, startIndex + listSize)
 })
 const currentPlayingItem = computed(() => {
+  //返回当前正在播放的项目
   return playlistData.keypoints[playingIndex.value]
 })
-const handleDragStart = (e) => {
-  e.dataTransfer.setData('text/plain', customLayerIndex.value.toString())
+const handleDragStart = (e: DragEvent) => {
+  e.dataTransfer?.setData('text/plain', customLayerIndex.value.toString())
 }
 
-const handleDrop = (e, newIndex) => {
+const handleDrop = (e: DragEvent, newIndex: number) => {
   e.preventDefault()
-  const oldIndex = parseInt(e.dataTransfer.getData('text/plain'))
+  const oldIndex = parseInt(e.dataTransfer!.getData('text/plain'))
   if (oldIndex === customLayerIndex.value) {
     customLayerIndex.value = newIndex
   }
+  // 拖拽完成，重置 draggingOverIndex
+  draggingOverIndex.value = -1
 }
 const draggingOverIndex = ref(-1) // 新增状态，-1表示没有拖拽
-const handleDragOver = (e, index) => {
+const handleDragOver = (e: DragEvent, index: number) => {
   e.preventDefault()
   draggingOverIndex.value = index // 设置当前拖拽经过的索引
 }
@@ -199,7 +199,7 @@ const handleDragLeave = () => {
       >
         <div
           :draggable="item === currentPlayingItem"
-          @dragstart="handleDragStart($event, index)"
+          @dragstart="handleDragStart($event)"
           :class="{
             playing: item === currentPlayingItem,
             draggable: item === currentPlayingItem
@@ -225,12 +225,14 @@ const handleDragLeave = () => {
   background-color: #e0f7fa; /* 浅蓝色背景 */
   font-weight: bold; /* 字体加粗 */
   color: #0d47a1; /* 深蓝色字体 */
-  margin: 2px 0; /* 添加一些外边距 */
+  height: 100%;
+  line-height: 58px;
 }
 .keypoint-list {
   position: absolute;
   width: 280px;
-  top: 80px;
+  height: 407px;
+  top: 180px;
   right: 0;
   z-index: 100;
   overflow: hidden;
