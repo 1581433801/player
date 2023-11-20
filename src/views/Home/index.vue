@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import KeypointList from './components/KeypointList.vue'
-import ImagePlayer from './components/ImagePlayer.vue'
+// import ImagePlayer from './components/ImagePlayer.vue'
 import Player from 'xgplayer'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { onMounted, ref, watch } from 'vue'
 import 'xgplayer/dist/index.min.css'
 import type { PointItem } from '@/types/home'
@@ -25,45 +26,12 @@ onMounted(async () => {
     fullscreenTarget: playerDom as HTMLElement,
     height: 800,
     width: '100%',
-    progressDot: [
-      {
-        id: 0, // 唯一标识，用于删除的时候索引
-        time: 30, // 展示的时间点，例子为在播放到10s钟的时候展示
-        text: '连续射门机会', // hover的时候展示文案，可以为空
-        duration: 10, // 展示时间跨度，单位为s
-        style: {
-          // 指定样式
-          fontSize: '30px',
-          backgroundColor: 'orange'
-        }
-      },
-      {
-        id: 0, // 唯一标识，用于删除的时候索引
-        time: 60, // 展示的时间点，例子为在播放到10s钟的时候展示
-        text: '比赛时刻绝杀', // hover的时候展示文案，可以为空
-        duration: 10, // 展示时间跨度，单位为s
-        style: {
-          // 指定样式
-          backgroundColor: 'orange'
-        }
-      },
-      {
-        id: 0, // 唯一标识，用于删除的时候索引
-        time: 90, // 展示的时间点，例子为在播放到10s钟的时候展示
-        text: '观众欢呼', // hover的时候展示文案，可以为空
-        duration: 5, // 展示时间跨度，单位为s
-        style: {
-          // 指定样式
-          backgroundColor: 'orange'
-        }
-      }
-    ]
+    progressDot: []
   })
   // 监听播放
   trackPlaybackProgress()
 })
 // ...其他代码
-const highlightKeypoint = ref<number | null>(null) // 高亮看点索引
 const trackPlaybackProgress = () => {
   player.on('timeupdate', () => {
     console.log('监听到播放器timeupdate')
@@ -74,45 +42,40 @@ const trackPlaybackProgress = () => {
         player.currentTime <= item.timestamps.end
     )
     console.log('计算得到的当前下标', index)
-    if (currType.value !== 'image') highlightKeypoint.value = index
-    console.log(highlightKeypoint.value)
+    // TODO 将计算得到的下标同步到Pinia仓库
   })
 }
-// 当前资源类型
-const currType = ref<string>('video')
-watch(currType, (newType, oldType) => {
-  console.log('检测到变动')
-  if (newType === 'image' && player) {
-    player.pause()
-  } else if (newType === 'video' && player) {
-    player.play()
-  }
-})
-// 自定义事件修改父组件中的currType值\
-const handleUpdateCurrType = async (point: PointItem & { index: number }) => {
-  console.log(point)
-  highlightKeypoint.value = point.index
-  currType.value = point.type
-  if (point.type === 'video' && player) {
-    player.currentTime = point.timestamps?.start
-    // 其他逻辑...
-  }
-}
+// // 当前资源类型
+// const currType = ref<string>('video')
+// watch(currType, (newType, oldType) => {
+//   console.log('检测到变动')
+//   if (newType === 'image' && player) {
+//     player.pause()
+//   } else if (newType === 'video' && player) {
+//     player.play()
+//   }
+// })
+// // 自定义事件修改父组件中的currType值\
+// const handleUpdateCurrType = async (point: PointItem & { index: number }) => {
+//   console.log(point)
+//   highlightKeypoint.value = point.index
+//   currType.value = point.type
+//   if (point.type === 'video' && player) {
+//     player.currentTime = point.timestamps?.start
+//     // 其他逻辑...
+//   }
+// }
 </script>
 
 <template>
   <div class="page">
     <div class="player">
-      <KeypointList
-        v-if="pointList.length"
-        :highlight-keypoint="highlightKeypoint"
-        @updateCurrType="handleUpdateCurrType"
-        :point-list="pointList"
-      />
+      <KeypointList v-if="pointList.length" :point-list="pointList" />
       <!-- 视频播放组件 -->
-      <div id="mse" v-show="currType === 'video'"></div>
+      <!-- <div id="mse" v-show="currType === 'video'"></div> -->
+      <div id="mse"></div>
       <!-- 图片播放组件 -->
-      <ImagePlayer v-show="currType === 'image'"></ImagePlayer>
+      <!-- <ImagePlayer v-show="currType === 'image'"></ImagePlayer> -->
     </div>
   </div>
 </template>

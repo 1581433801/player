@@ -208,19 +208,24 @@ const isLongPress = ref(false) // 追踪是否长按
 
 const handleMouseDown = (index: number, e: any) => {
   if (index < customLayerIndex.value) {
-    // 长按已经播放过的任意一个列表项, 弹出一个包含所有已播放项的列表
+    // 如果长按已播放项
     longPressTimer.value = setTimeout(() => {
-      // 弹出一个包含所有已播放项的列表 // TODO
-      showPlayedItemsList.value = true // 显示已播放项列表
+      listToShow.value = playlistData.keypoints.slice(0, playingIndex.value) // 设置为已播放项列表
+      showItemsList.value = true // 显示列表
+    }, 500)
+  } else if (index > customLayerIndex.value) {
+    // 如果长按未播放项
+    longPressTimer.value = setTimeout(() => {
+      listToShow.value = playlistData.keypoints.slice(playingIndex.value + 1) // 设置为未播放项列表
+      showItemsList.value = true // 显示列表
     }, 500)
   } else if (index === customLayerIndex.value) {
+    // 如果长按当前播放项
     longPressTimer.value = setTimeout(() => {
       isLongPress.value = true
       e.target.classList.add('draggable')
-      // 启用拖拽
       e.target.setAttribute('draggable', true)
-      // 注册全局mouseup事件监听器
-    }, 100) // 0.x秒后触发
+    }, 500)
   }
   window.addEventListener('mouseup', handleMouseUp)
   e.target.addEventListener('dragend', handleMouseUp)
@@ -244,37 +249,43 @@ const handleClick = (item: PointItem) => {
   playingIndex.value = playlistData.keypoints.findIndex(
     (i) => i.timestamps.start === item.timestamps?.start
   )
+  // 获取视频元素（根据实际情况调整选择器）
+  const videoPlayer = document.querySelector('video')
+
+  // 如果视频元素存在且 item 有有效的时间戳
+  if (videoPlayer && item.timestamps) {
+    // 设置视频播放器的当前时间
+    videoPlayer.currentTime = item.timestamps.start
+  }
 }
 
-const showPlayedItemsList = ref(false) // 控制已播放项列表的显示
+const showItemsList = ref(false) // 控制弹出层的显示
+const listToShow = ref<PointItem[]>([]) // 要展示的列表
 
-// 已播放项的计算属性
-const playedItems = computed(() =>
-  playlistData.keypoints.slice(0, playingIndex.value)
-)
-const handleClosePlayedItemsList = () => {
-  showPlayedItemsList.value = false // 关闭已播放项列表
+const handleCloseTemporaryList = () => {
+  showItemsList.value = false // 关闭已播放项列表
 }
-const handleSelectPlayedItem = (selectedItem: PointItem) => {
+const handleSelectItem = (selectedItem: PointItem) => {
+  handleClick(selectedItem)
   // 处理已播放项的选择逻辑，例如更新 playingIndex
   const newIndex = playlistData.keypoints.findIndex(
     (item) => item.timestamps.start === selectedItem.timestamps?.start
   )
   playingIndex.value = newIndex
-  showPlayedItemsList.value = false // 选择后关闭弹出窗口
+  showItemsList.value = false // 选择后关闭弹出窗口
 }
 </script>
 <template>
   <div ref="container" class="keypoint-list">
-    <div v-if="showPlayedItemsList" class="temporary-popup">
+    <div v-if="showItemsList" class="temporary-popup">
       <!-- 已播放项列表 -->
       <div class="playedOrfuture-list">
         <PlaylistItem
-          v-for="item in playedItems"
-          :key="item.timestamps.start"
+          v-for="item in listToShow"
+          :key="item.timestamps?.start"
           :item="item"
           :isPlaying="item === currentPlayingItem"
-          @click="handleSelectPlayedItem(item)"
+          @click="handleSelectItem(item)"
         />
       </div>
       <!-- 当前播放项 -->
@@ -282,7 +293,7 @@ const handleSelectPlayedItem = (selectedItem: PointItem) => {
         <PlaylistItem
           :item="currentPlayingItem"
           :isPlaying="true"
-          @click="handleClosePlayedItemsList"
+          @click="handleCloseTemporaryList"
         />
       </div>
     </div>
