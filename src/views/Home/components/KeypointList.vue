@@ -247,14 +247,14 @@ const handleClick = (item: PointItem) => {
         :key="index"
         class="pointItem"
         :class="{ 'drag-over': draggingOverIndex === index }"
+        @drop="handleDrop($event, index)"
         @dragover="handleDragOver($event, index)"
         @dragleave="handleDragLeave"
-        @drop="handleDrop($event, index)"
+        @click="handleClick(item)"
+        @mousedown="handleMouseDown(index, $event)"
+        @dragstart="handleDragStart($event)"
       >
         <div
-          @click="handleClick(item)"
-          @mousedown="handleMouseDown(index, $event)"
-          @dragstart="handleDragStart($event)"
           :class="{
             playing: item === currentPlayingItem
           }"
