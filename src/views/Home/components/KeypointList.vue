@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import type { PointItem } from '@/types/home'
 const playlistData = {
   status: 'success',
   title: '混合媒体展示',
@@ -140,23 +141,40 @@ const playingIndex = ref(0) // 初始设置为第一个播放项, TODO 后续需
 const customLayerIndex = ref(3) // 当前播放项所在层级
 // 定义计算属性
 const displayedPlaylist = computed(() => {
+  // 确保播放索引在有效范围内
+  // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+  playingIndex.value = Math.min(
+    playingIndex.value,
+    playlistData.keypoints.length - 1
+  )
+  // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+  playingIndex.value = Math.max(0, playingIndex.value)
+
   const totalItems = playlistData.keypoints.length
   const listSize = 7 // 列表固定大小
   let startIndex = playingIndex.value - customLayerIndex.value
-  // 允许列表的上方出现空位
+
+  // 调整 startIndex 保证它在合理范围内
   startIndex = Math.max(-customLayerIndex.value, startIndex)
-  startIndex = Math.min(startIndex, totalItems - listSize)
-  // 如果startIndex为负，说明需要在列表上方留空
+
+  let displayedItems = playlistData.keypoints.slice(
+    Math.max(0, startIndex),
+    Math.min(startIndex + listSize, totalItems)
+  )
+
+  // 如果 startIndex 为负，说明需要在列表上方添加空位
   if (startIndex < 0) {
-    // 使用空对象来填充空位
-    const emptyItems = Array(-startIndex).fill({})
-    // 从playlistData中获取实际项并与空项合并
-    return [
-      ...emptyItems,
-      ...playlistData.keypoints.slice(0, listSize + startIndex)
-    ]
+    const emptyItemsAtStart = Array(-startIndex).fill({})
+    displayedItems = [...emptyItemsAtStart, ...displayedItems]
   }
-  return playlistData.keypoints.slice(startIndex, startIndex + listSize)
+
+  // 检查是否需要在列表末尾添加空位
+  if (displayedItems.length < listSize) {
+    const emptyItemsAtEnd = Array(listSize - displayedItems.length).fill({})
+    displayedItems = [...displayedItems, ...emptyItemsAtEnd]
+  }
+
+  return displayedItems
 })
 const currentPlayingItem = computed(() => {
   //返回当前正在播放的项目
@@ -184,9 +202,45 @@ const handleDragOver = (e: DragEvent, index: number) => {
 const handleDragLeave = () => {
   draggingOverIndex.value = -1 // 重置拖拽索引
 }
+const longPressTimer = ref()
+const isLongPress = ref(false) // 追踪是否长按
+
+const handleMouseDown = (index: number, e: any) => {
+  if (index === customLayerIndex.value) {
+    longPressTimer.value = setTimeout(() => {
+      isLongPress.value = true
+      e.target.classList.add('draggable')
+      // 启用拖拽
+      e.target.setAttribute('draggable', true)
+      // 注册全局mouseup事件监听器
+    }, 100) // 0.x秒后触发
+    window.addEventListener('mouseup', handleMouseUp)
+    e.target.addEventListener('dragend', handleMouseUp)
+  }
+}
+
+const handleMouseUp = () => {
+  console.log('全局释放')
+  clearTimeout(longPressTimer.value)
+  isLongPress.value = false
+
+  const draggableItems = document.querySelectorAll('[draggable="true"]')
+  draggableItems.forEach((elem) => {
+    elem.classList.remove('draggable')
+    elem.removeAttribute('draggable')
+  })
+
+  // 移除全局mouseup事件监听器
+  window.removeEventListener('mouseup', handleMouseUp)
+}
+const handleClick = (item: PointItem) => {
+  playingIndex.value = playlistData.keypoints.findIndex(
+    (i) => i.timestamps.start === item.timestamps?.start
+  )
+}
 </script>
 <template>
-  <div ref="container" class="keypoint-list">
+  <div ref="container" class="keypoint-list" @mouseup="handleMouseUp">
     <ul>
       <li
         v-for="(item, index) in displayedPlaylist"
@@ -198,11 +252,11 @@ const handleDragLeave = () => {
         @drop="handleDrop($event, index)"
       >
         <div
-          :draggable="item === currentPlayingItem"
+          @click="handleClick(item)"
+          @mousedown="handleMouseDown(index, $event)"
           @dragstart="handleDragStart($event)"
           :class="{
-            playing: item === currentPlayingItem,
-            draggable: item === currentPlayingItem
+            playing: item === currentPlayingItem
           }"
         >
           {{ item.description }}
@@ -214,29 +268,41 @@ const handleDragLeave = () => {
 
 <style scoped lang="scss">
 .drag-over {
-  background-color: #e0f7fa; /* 您可以选择任意颜色 */
+  background-color: rgba(224, 247, 250, 0.5); /* 您可以选择任意颜色 */
 }
 .draggable {
   cursor: move; /* 改变光标样式为移动的图标 */
-  border: 1px dashed #aaa; /* 虚线边框 */
-  background-color: #f9f9f9; /* 轻微的背景色 */
+  background-color: rgba(224, 247, 250, 1) !important; /* 轻微的背景色 */
+  transition: all 0.4s ease-in-out;
 }
 .playing {
-  background-color: #e0f7fa; /* 浅蓝色背景 */
+  transition: all 0.4s ease-in-out;
+  background-color: rgba(224, 247, 250, 0.5); /* 浅蓝色背景 */
   font-weight: bold; /* 字体加粗 */
   color: #0d47a1; /* 深蓝色字体 */
   height: 100%;
+  font-size: 24px;
+
   line-height: 58px;
 }
 .keypoint-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   position: absolute;
   width: 280px;
-  height: 407px;
+  height: 450px;
   top: 180px;
   right: 0;
   z-index: 100;
   overflow: hidden;
-  background-color: rgba(0, 0, 0, 0.3); /* 半透明背景 */
+  // background-color: rgba(0, 0, 0, 0.4); /* 半透明背景 */
+  background: linear-gradient(
+    to top,
+    transparent,
+    rgba(0, 0, 0, 0.7),
+    transparent
+  );
   .toggleButton {
     cursor: pointer;
     margin-left: 10px;
@@ -270,11 +336,12 @@ const handleDragLeave = () => {
   }
 }
 .pointItem {
+  user-select: none;
   width: 100%;
   height: 58.18px;
-  text-align: center;
+  text-indent: 40px;
   cursor: pointer;
-  color: #d1d1d1;
+  color: #eeeded;
   font-size: 20px;
   line-height: 66px;
   transition: all 0.3s ease;

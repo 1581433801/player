@@ -13,5 +13,5 @@ export type PointItem = {
     start: number
     end: number
   }
-  url: string
+  url?: string
 }
