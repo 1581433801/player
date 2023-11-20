@@ -211,7 +211,8 @@ const handleMouseDown = (index: number, e: any) => {
     // 长按已经播放过的任意一个列表项, 弹出一个包含所有已播放项的列表
     longPressTimer.value = setTimeout(() => {
       // 弹出一个包含所有已播放项的列表 // TODO
-    }, 100)
+      showPlayedItemsList.value = true // 显示已播放项列表
+    }, 500)
   } else if (index === customLayerIndex.value) {
     longPressTimer.value = setTimeout(() => {
       isLongPress.value = true
@@ -220,9 +221,9 @@ const handleMouseDown = (index: number, e: any) => {
       e.target.setAttribute('draggable', true)
       // 注册全局mouseup事件监听器
     }, 100) // 0.x秒后触发
-    window.addEventListener('mouseup', handleMouseUp)
-    e.target.addEventListener('dragend', handleMouseUp)
   }
+  window.addEventListener('mouseup', handleMouseUp)
+  e.target.addEventListener('dragend', handleMouseUp)
 }
 
 const handleMouseUp = () => {
@@ -244,10 +245,48 @@ const handleClick = (item: PointItem) => {
     (i) => i.timestamps.start === item.timestamps?.start
   )
 }
+
+const showPlayedItemsList = ref(false) // 控制已播放项列表的显示
+
+// 已播放项的计算属性
+const playedItems = computed(() =>
+  playlistData.keypoints.slice(0, playingIndex.value)
+)
+const handleClosePlayedItemsList = () => {
+  showPlayedItemsList.value = false // 关闭已播放项列表
+}
+const handleSelectPlayedItem = (selectedItem: PointItem) => {
+  // 处理已播放项的选择逻辑，例如更新 playingIndex
+  const newIndex = playlistData.keypoints.findIndex(
+    (item) => item.timestamps.start === selectedItem.timestamps?.start
+  )
+  playingIndex.value = newIndex
+  showPlayedItemsList.value = false // 选择后关闭弹出窗口
+}
 </script>
 <template>
   <div ref="container" class="keypoint-list">
-    <ul>
+    <div v-if="showPlayedItemsList" class="temporary-popup">
+      <!-- 已播放项列表 -->
+      <div class="playedOrfuture-list">
+        <PlaylistItem
+          v-for="item in playedItems"
+          :key="item.timestamps.start"
+          :item="item"
+          :isPlaying="item === currentPlayingItem"
+          @click="handleSelectPlayedItem(item)"
+        />
+      </div>
+      <!-- 当前播放项 -->
+      <div class="current-playing-item">
+        <PlaylistItem
+          :item="currentPlayingItem"
+          :isPlaying="true"
+          @click="handleClosePlayedItemsList"
+        />
+      </div>
+    </div>
+    <ul v-else>
       <PlaylistItem
         v-for="(item, index) in displayedPlaylist"
         :key="index"
@@ -284,6 +323,17 @@ const handleClick = (item: PointItem) => {
     rgba(0, 0, 0, 0.7),
     transparent
   );
+  .temporary-popup {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 450px;
+  }
+  .playedOrfuture-list {
+    flex: 1;
+    overflow: scroll;
+    overflow-x: hidden;
+  }
   .toggleButton {
     cursor: pointer;
     margin-left: 10px;

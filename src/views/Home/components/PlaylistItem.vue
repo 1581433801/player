@@ -1,7 +1,7 @@
 <template>
   <li
     class="pointItem"
-    :class="{ 'drag-over': isDragOver }"
+    :class="{ 'drag-over': isDragOver, 'hover-effect': item?.description }"
     @drop="handleDrop($event)"
     @dragover="handleDragOver($event)"
     @dragleave="handleDragLeave"
@@ -76,7 +76,12 @@ const handleDragLeave = (event: DragEvent) => emit('dragleave', event)
   cursor: pointer;
   color: #eeeded;
   font-size: 20px;
-  line-height: 66px;
+  line-height: 58px;
   transition: all 0.3s ease;
+  &.hover-effect:hover {
+    background-color: rgba(224, 247, 250, 0.5); /* 浅蓝色背景 */
+    font-weight: bold; /* 字体加粗 */
+    color: #1d5bb8; /* 深蓝色字体 */
+  }
 }
 </style>
