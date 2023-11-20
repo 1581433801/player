@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import type { PointItem } from '@/types/home'
+import PlaylistItem from '@/views/Home/components/PlaylistItem.vue'
 const playlistData = {
   status: 'success',
   title: '混合媒体展示',
@@ -206,7 +207,12 @@ const longPressTimer = ref()
 const isLongPress = ref(false) // 追踪是否长按
 
 const handleMouseDown = (index: number, e: any) => {
-  if (index === customLayerIndex.value) {
+  if (index < customLayerIndex.value) {
+    // 长按已经播放过的任意一个列表项, 弹出一个包含所有已播放项的列表
+    longPressTimer.value = setTimeout(() => {
+      // 弹出一个包含所有已播放项的列表 // TODO
+    }, 100)
+  } else if (index === customLayerIndex.value) {
     longPressTimer.value = setTimeout(() => {
       isLongPress.value = true
       e.target.classList.add('draggable')
@@ -240,51 +246,26 @@ const handleClick = (item: PointItem) => {
 }
 </script>
 <template>
-  <div ref="container" class="keypoint-list" @mouseup="handleMouseUp">
+  <div ref="container" class="keypoint-list">
     <ul>
-      <li
+      <PlaylistItem
         v-for="(item, index) in displayedPlaylist"
         :key="index"
-        class="pointItem"
-        :class="{ 'drag-over': draggingOverIndex === index }"
+        :item="item"
+        :isPlaying="item === currentPlayingItem"
+        :isDragOver="draggingOverIndex === index"
         @drop="handleDrop($event, index)"
         @dragover="handleDragOver($event, index)"
         @dragleave="handleDragLeave"
         @click="handleClick(item)"
         @mousedown="handleMouseDown(index, $event)"
-        @dragstart="handleDragStart($event)"
-      >
-        <div
-          :class="{
-            playing: item === currentPlayingItem
-          }"
-        >
-          {{ item.description }}
-        </div>
-      </li>
+        @dragstart="handleDragStart"
+      />
     </ul>
   </div>
 </template>
 
 <style scoped lang="scss">
-.drag-over {
-  background-color: rgba(224, 247, 250, 0.5); /* 您可以选择任意颜色 */
-}
-.draggable {
-  cursor: move; /* 改变光标样式为移动的图标 */
-  background-color: rgba(224, 247, 250, 1) !important; /* 轻微的背景色 */
-  transition: all 0.4s ease-in-out;
-}
-.playing {
-  transition: all 0.4s ease-in-out;
-  background-color: rgba(224, 247, 250, 0.5); /* 浅蓝色背景 */
-  font-weight: bold; /* 字体加粗 */
-  color: #0d47a1; /* 深蓝色字体 */
-  height: 100%;
-  font-size: 24px;
-
-  line-height: 58px;
-}
 .keypoint-list {
   display: flex;
   flex-direction: column;
@@ -333,22 +314,6 @@ const handleClick = (item: PointItem) => {
   z-index: 10;
   &:hover {
     background-color: rgba(225, 211, 211, 0.3);
-  }
-}
-.pointItem {
-  user-select: none;
-  width: 100%;
-  height: 58.18px;
-  text-indent: 40px;
-  cursor: pointer;
-  color: #eeeded;
-  font-size: 20px;
-  line-height: 66px;
-  transition: all 0.3s ease;
-  &-highlight {
-    background-color: rgba(0, 0, 0, 0.4);
-    font-size: 24px;
-    color: orange;
   }
 }
 </style>
