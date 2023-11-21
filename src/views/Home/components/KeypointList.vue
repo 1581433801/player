@@ -1,164 +1,39 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref, toRefs, watch } from 'vue'
 import type { PointItem } from '@/types/home'
 import PlaylistItem from '@/views/Home/components/PlaylistItem.vue'
-const playlistData = {
-  status: 'success',
-  title: '混合媒体展示',
-  mediaUrl:
-    'https://sample-videos.com/video123/mp4/480/big_buck_bunny_480p_20mb.mp4',
-  keypoints: [
-    {
-      type: 'video',
-      description: '1 连续射门机会',
-      timestamps: {
-        start: 2,
-        end: 5
-      }
-    },
-    {
-      type: 'video',
-      description: '2 比赛时刻绝杀',
-      timestamps: {
-        start: 6,
-        end: 8
-      }
-    },
-    {
-      type: 'video',
-      description: '3 观众欢呼',
-      timestamps: {
-        start: 9,
-        end: 11
-      }
-    },
-    {
-      type: 'video',
-      description: '4 连续射门机会',
-      timestamps: {
-        start: 12,
-        end: 14
-      }
-    },
-    {
-      type: 'video',
-      description: '5 比赛时刻绝杀',
-      timestamps: {
-        start: 26,
-        end: 29
-      }
-    },
-    {
-      type: 'video',
-      description: '6 观众欢呼',
-      timestamps: {
-        start: 32,
-        end: 35
-      }
-    },
-    {
-      type: 'video',
-      description: '7 连续射门机会',
-      timestamps: {
-        start: 38,
-        end: 41
-      }
-    },
-    {
-      type: 'video',
-      description: '8 比赛时刻绝杀',
-      timestamps: {
-        start: 44,
-        end: 47
-      }
-    },
-    {
-      type: 'video',
-      description: '9 观众欢呼',
-      timestamps: {
-        start: 50,
-        end: 53
-      }
-    },
-    {
-      type: 'video',
-      description: '10 连续射门机会',
-      timestamps: {
-        start: 56,
-        end: 59
-      }
-    },
-    {
-      type: 'video',
-      description: '11 比赛时刻绝杀',
-      timestamps: {
-        start: 62,
-        end: 65
-      }
-    },
-    {
-      type: 'video',
-      description: '12 观众欢呼',
-      timestamps: {
-        start: 68,
-        end: 71
-      }
-    },
-    {
-      type: 'video',
-      description: '13 观众欢呼',
-      timestamps: {
-        start: 74,
-        end: 77
-      }
-    },
-    {
-      type: 'video',
-      description: '14 观众欢呼',
-      timestamps: {
-        start: 80,
-        end: 83
-      }
-    },
-    {
-      type: 'video',
-      description: '15 观众欢呼',
-      timestamps: {
-        start: 86,
-        end: 89
-      }
-    },
-    {
-      type: 'video',
-      description: '16 观众欢呼',
-      timestamps: {
-        start: 92,
-        end: 95
-      }
-    }
-  ]
-}
-const playingIndex = ref(0) // 初始设置为第一个播放项, TODO 后续需要持久化
-const customLayerIndex = ref(3) // 当前播放项所在层级
+import { usePlayerStore } from '@/stores' // 导入 Pinia store
+
+const {
+  playingIndex,
+  customLayerIndex,
+  updatePlayingIndex,
+  updateCustomLayerIndex
+} = toRefs(usePlayerStore())
+const props = defineProps<{
+  pointList: PointItem[]
+}>()
+const playlistData = props.pointList
+// const playingIndex = ref(0) // 初始设置为第一个播放项, TODO 后续需要持久化
+// const customLayerIndex = ref(3) // 当前播放项所在层级
 // 定义计算属性
 const displayedPlaylist = computed(() => {
   // 确保播放索引在有效范围内
   // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-  playingIndex.value = Math.min(
-    playingIndex.value,
-    playlistData.keypoints.length - 1
+  updatePlayingIndex.value(
+    Math.min(playingIndex.value, playlistData.length - 1)
   )
   // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-  playingIndex.value = Math.max(0, playingIndex.value)
+  updatePlayingIndex.value(Math.max(0, playingIndex.value))
 
-  const totalItems = playlistData.keypoints.length
+  const totalItems = playlistData.length
   const listSize = 7 // 列表固定大小
   let startIndex = playingIndex.value - customLayerIndex.value
 
   // 调整 startIndex 保证它在合理范围内
   startIndex = Math.max(-customLayerIndex.value, startIndex)
 
-  let displayedItems = playlistData.keypoints.slice(
+  let displayedItems = playlistData.slice(
     Math.max(0, startIndex),
     Math.min(startIndex + listSize, totalItems)
   )
@@ -179,7 +54,7 @@ const displayedPlaylist = computed(() => {
 })
 const currentPlayingItem = computed(() => {
   //返回当前正在播放的项目
-  return playlistData.keypoints[playingIndex.value]
+  return playlistData[playingIndex.value]
 })
 const handleDragStart = (e: DragEvent) => {
   e.dataTransfer?.setData('text/plain', customLayerIndex.value.toString())
@@ -210,14 +85,16 @@ const handleMouseDown = (index: number, e: any) => {
   if (index < customLayerIndex.value) {
     // 如果长按已播放项
     longPressTimer.value = setTimeout(() => {
-      listToShow.value = playlistData.keypoints.slice(0, playingIndex.value) // 设置为已播放项列表
+      listToShow.value = playlistData.slice(0, playingIndex.value) // 设置为已播放项列表
       showItemsList.value = true // 显示列表
+      listTypeToShow.value = 'played'
     }, 500)
   } else if (index > customLayerIndex.value) {
     // 如果长按未播放项
     longPressTimer.value = setTimeout(() => {
-      listToShow.value = playlistData.keypoints.slice(playingIndex.value + 1) // 设置为未播放项列表
+      listToShow.value = playlistData.slice(playingIndex.value + 1) // 设置为未播放项列表
       showItemsList.value = true // 显示列表
+      listTypeToShow.value = 'upcoming'
     }, 500)
   } else if (index === customLayerIndex.value) {
     // 如果长按当前播放项
@@ -245,9 +122,12 @@ const handleMouseUp = () => {
   // 移除全局mouseup事件监听器
   window.removeEventListener('mouseup', handleMouseUp)
 }
+onMounted(() => {
+  handleClick(playlistData[playingIndex.value])
+})
 const handleClick = (item: PointItem) => {
-  playingIndex.value = playlistData.keypoints.findIndex(
-    (i) => i.timestamps.start === item.timestamps?.start
+  playingIndex.value = playlistData.findIndex(
+    (i) => i.timestamps?.start === item.timestamps?.start
   )
   // 获取视频元素（根据实际情况调整选择器）
   const videoPlayer = document.querySelector('video')
@@ -268,26 +148,47 @@ const handleCloseTemporaryList = () => {
 const handleSelectItem = (selectedItem: PointItem) => {
   handleClick(selectedItem)
   // 处理已播放项的选择逻辑，例如更新 playingIndex
-  const newIndex = playlistData.keypoints.findIndex(
-    (item) => item.timestamps.start === selectedItem.timestamps?.start
+  const newIndex = playlistData.findIndex(
+    (item) => item.timestamps?.start === selectedItem.timestamps?.start
   )
   playingIndex.value = newIndex
   showItemsList.value = false // 选择后关闭弹出窗口
 }
+
+// 用户长按的列表类型（'played' 或 'upcoming'）
+const listTypeToShow = ref<string>('')
+// 更新 listToShow 的函数
+const updateListToShow = () => {
+  if (showItemsList.value) {
+    if (listTypeToShow.value === 'played') {
+      listToShow.value = playlistData.slice(0, playingIndex.value)
+    } else if (listTypeToShow.value === 'upcoming') {
+      listToShow.value = playlistData.slice(playingIndex.value + 1)
+    }
+  }
+}
+
+// 使用 watch 监听 playingIndex 的变化
+watch(playingIndex, () => {
+  updateListToShow()
+})
 </script>
 <template>
   <div ref="container" class="keypoint-list">
     <div v-if="showItemsList" class="temporary-popup">
       <!-- 已播放项列表 -->
-      <div class="playedOrfuture-list">
-        <PlaylistItem
-          v-for="item in listToShow"
-          :key="item.timestamps?.start"
-          :item="item"
-          :isPlaying="item === currentPlayingItem"
-          @click="handleSelectItem(item)"
-        />
-      </div>
+      <!-- 背景色为红色 -->
+      <el-scrollbar>
+        <div class="playedOrfuture-list">
+          <PlaylistItem
+            v-for="item in listToShow"
+            :key="item.timestamps?.start"
+            :item="item"
+            :isPlaying="item === currentPlayingItem"
+            @click="handleSelectItem(item)"
+          />
+        </div>
+      </el-scrollbar>
       <!-- 当前播放项 -->
       <div class="current-playing-item">
         <PlaylistItem
@@ -316,6 +217,9 @@ const handleSelectItem = (selectedItem: PointItem) => {
 </template>
 
 <style scoped lang="scss">
+.el-scrollbar__thumb {
+  background-color: #0042c5 !important;
+}
 .keypoint-list {
   display: flex;
   flex-direction: column;
@@ -342,8 +246,6 @@ const handleSelectItem = (selectedItem: PointItem) => {
   }
   .playedOrfuture-list {
     flex: 1;
-    overflow: scroll;
-    overflow-x: hidden;
   }
   .toggleButton {
     cursor: pointer;
