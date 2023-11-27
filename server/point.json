@@ -1,9 +1,11 @@
 {
   "status": "success",
   "title": "混合媒体展示",
-  "mediaUrl": "https://sample-videos.com/video123/mp4/480/big_buck_bunny_480p_20mb.mp4",
+  "videoBaseUrl": "https://qi-1310338158.cos.ap-beijing.myqcloud.com",
   "keypoints": [
     {
+      "videoId": "video01",
+      "pointId": "point1",
       "type": "video",
       "description": "1 连续射门机会",
       "timestamps": {
@@ -12,6 +14,8 @@
       }
     },
     {
+      "videoId": "video01",
+      "pointId": "point2",
       "type": "video",
       "description": "2 比赛时刻绝杀",
       "timestamps": {
@@ -20,6 +24,8 @@
       }
     },
     {
+      "videoId": "video01",
+      "pointId": "point3",
       "type": "video",
       "description": "3 观众欢呼",
       "timestamps": {
@@ -28,6 +34,8 @@
       }
     },
     {
+      "videoId": "video01",
+      "pointId": "point4",
       "type": "video",
       "description": "4 连续射门机会",
       "timestamps": {
@@ -36,6 +44,8 @@
       }
     },
     {
+      "videoId": "video01",
+      "pointId": "point5",
       "type": "video",
       "description": "5 比赛时刻绝杀",
       "timestamps": {
@@ -44,6 +54,8 @@
       }
     },
     {
+      "videoId": "video01",
+      "pointId": "point6",
       "type": "video",
       "description": "6 观众欢呼",
       "timestamps": {
@@ -52,6 +64,8 @@
       }
     },
     {
+      "videoId": "video01",
+      "pointId": "point7",
       "type": "video",
       "description": "7 连续射门机会",
       "timestamps": {
@@ -60,6 +74,8 @@
       }
     },
     {
+      "videoId": "video01",
+      "pointId": "point8",
       "type": "video",
       "description": "8 比赛时刻绝杀",
       "timestamps": {
@@ -68,67 +84,84 @@
       }
     },
     {
+      "videoId": "video02",
+      "pointId": "point9",
       "type": "video",
       "description": "9 观众欢呼",
       "timestamps": {
-        "start": 50,
-        "end": 53
+        "start": 4,
+        "end": 5
       }
     },
     {
+      "videoId": "video02",
+      "pointId": "point10",
       "type": "video",
       "description": "10 连续射门机会",
       "timestamps": {
-        "start": 56,
-        "end": 59
+        "start": 6,
+        "end": 8
+
       }
     },
     {
+      "videoId": "video02",
+      "pointId": "point11",
       "type": "video",
       "description": "11 比赛时刻绝杀",
       "timestamps": {
-        "start": 62,
-        "end": 65
+        "start": 9,
+        "end": 11
       }
     },
     {
+      "videoId": "video02",
+      "pointId": "point12",
       "type": "video",
       "description": "12 观众欢呼",
       "timestamps": {
-        "start": 68,
-        "end": 71
+        "start": 12,
+        "end": 14
       }
     },
     {
+      "videoId": "video02",
+      "pointId": "point13",
       "type": "video",
       "description": "13 观众欢呼",
       "timestamps": {
-        "start": 74,
-        "end": 77
+        "start": 26,
+        "end": 29
       }
     },
     {
+      "videoId": "video02",
+      "pointId": "point14",
       "type": "video",
       "description": "14 观众欢呼",
       "timestamps": {
-        "start": 80,
-        "end": 83
+        "start": 32,
+        "end": 35
       }
     },
     {
+      "videoId": "video02",
+      "pointId": "point15",
       "type": "video",
       "description": "15 观众欢呼",
       "timestamps": {
-        "start": 86,
-        "end": 89
+        "start": 38,
+        "end": 41
       }
     },
     {
+      "videoId": "video02",
+      "pointId": "point16",
       "type": "video",
       "description": "16 观众欢呼",
       "timestamps": {
-        "start": 92,
-        "end": 95
+        "start": 44,
+        "end": 47
       }
     }
   ]

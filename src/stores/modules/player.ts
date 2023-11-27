@@ -24,6 +24,8 @@ export const usePlayerStore = defineStore(
     const customLayerIndex = ref(3)
     const lastPlayedTime = ref(0) // 新增状态
     const playlistData = ref([]) // 假设这是播放列表数据
+    const currentVideoId = ref('')
+    const currentVideoUrl = ref('')
 
     // 定义操作方法
     const updatePlayingIndex = (index: number) => {
@@ -36,15 +38,25 @@ export const usePlayerStore = defineStore(
     const updateLastPlayedTime = (time: number) => {
       lastPlayedTime.value = time // 更新最后播放的时间
     }
+    const updateCurrentVideoId = (id: string) => {
+      currentVideoId.value = id
+    }
+    const updateCurrentVideoUrl = (url: string) => {
+      currentVideoUrl.value = url
+    }
     // 返回状态和方法
     return {
       playingIndex,
       customLayerIndex,
       playlistData,
       lastPlayedTime,
+      currentVideoId,
+      currentVideoUrl,
       updatePlayingIndex,
       updateCustomLayerIndex,
-      updateLastPlayedTime
+      updateLastPlayedTime,
+      updateCurrentVideoId,
+      updateCurrentVideoUrl
     }
   },
   {

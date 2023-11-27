@@ -3,10 +3,12 @@ export type PointsType = {
   keypoints: Array<PointItem>
   status: string
   title: string
-  mediaUrl: string
+  videoBaseUrl: string
 }
 // 单个看点
 export type PointItem = {
+  videoId: string
+  pointId: string
   type: string
   description: string
   timestamps?: {

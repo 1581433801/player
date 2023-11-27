@@ -8,16 +8,12 @@ import { getPointList } from '@/api/home'
 import { usePlayerStore } from '@/stores'
 const pointList = ref<PointItem[]>([])
 let player: any
-onMounted(async () => {
-  const res = await getPointList()
-  pointList.value = res.keypoints
+const store = toRefs(usePlayerStore())
+const initPlayer = (videoUrl: string) => {
   const playerDom = document.querySelector('.player')
-  // 页面加载时设置播放器的播放进度
-
-  // let player = new Player({
   player = new Player({
     id: 'mse',
-    url: res.mediaUrl,
+    url: videoUrl,
     videoInit: true,
     closeInactive: false,
     autoplay: true,
@@ -27,27 +23,65 @@ onMounted(async () => {
     fullscreenTarget: playerDom as HTMLElement,
     height: 800,
     width: '100%',
-    progressDot: []
+    marginControls: true
   })
-  player.currentTime = store.lastPlayedTime.value
 
-  // 监听播放
+  player.currentTime = store.lastPlayedTime.value
   trackPlaybackProgress()
+}
+onMounted(async () => {
+  const res = await getPointList()
+  pointList.value = res.keypoints
+  if (pointList.value.length > 0) {
+    const firstPoint = pointList.value[0]
+    const videoUrl =
+      store.currentVideoUrl.value ||
+      res.videoBaseUrl + '/' + firstPoint.videoId + '.mp4'
+    initPlayer(videoUrl)
+  }
 })
-const store = toRefs(usePlayerStore())
+// onMounted(async () => {
+//   const res = await getPointList()
+//   pointList.value = res.keypoints
+//   const playerDom = document.querySelector('.player')
+//   // 页面加载时设置播放器的播放进度
+
+//   // let player = new Player({
+//   player = new Player({
+//     id: 'mse',
+//     url: res.mediaUrl,
+//     videoInit: true,
+//     closeInactive: false,
+//     autoplay: true,
+//     videoFillMode: 'cover',
+//     loop: true,
+//     ignores: ['cssfullscreen'],
+//     fullscreenTarget: playerDom as HTMLElement,
+//     height: 800,
+//     width: '100%',
+//     progressDot: []
+//   })
+//   player.currentTime = store.lastPlayedTime.value
+
+//   // 监听播放
+//   trackPlaybackProgress()
+// })
 const trackPlaybackProgress = () => {
   player.on('timeupdate', () => {
-    console.log('监听到播放器timeupdate')
     store.updateLastPlayedTime.value(player.currentTime) // 更新播放时间
+    const currentVideoId = store.currentVideoId.value
     const index = pointList.value.findIndex(
       (item) =>
         item.timestamps &&
+        item.videoId === currentVideoId &&
         player.currentTime >= item.timestamps.start &&
         player.currentTime <= item.timestamps.end
     )
-    console.log('计算得到的当前对应播放项的下标', index)
-    // TODO 将计算得到的下标同步到Pinia仓库
-    if (index !== -1) store.updatePlayingIndex.value(index)
+
+    console.log('检测到播放', `index=${index}`)
+    if (index !== -1) {
+      store.updatePlayingIndex.value(index)
+    }
   })
 }
 </script>

@@ -8,7 +8,9 @@ const {
   playingIndex,
   customLayerIndex,
   updatePlayingIndex,
-  updateCustomLayerIndex
+  updateCustomLayerIndex,
+  updateCurrentVideoId,
+  updateCurrentVideoUrl
 } = toRefs(usePlayerStore())
 const props = defineProps<{
   pointList: PointItem[]
@@ -88,21 +90,21 @@ const handleMouseDown = (index: number, e: any) => {
       listToShow.value = playlistData.slice(0, playingIndex.value) // 设置为已播放项列表
       showItemsList.value = true // 显示列表
       listTypeToShow.value = 'played'
-    }, 500)
+    }, 200)
   } else if (index > customLayerIndex.value) {
     // 如果长按未播放项
     longPressTimer.value = setTimeout(() => {
       listToShow.value = playlistData.slice(playingIndex.value + 1) // 设置为未播放项列表
       showItemsList.value = true // 显示列表
       listTypeToShow.value = 'upcoming'
-    }, 500)
+    }, 200)
   } else if (index === customLayerIndex.value) {
     // 如果长按当前播放项
     longPressTimer.value = setTimeout(() => {
       isLongPress.value = true
       e.target.classList.add('draggable')
       e.target.setAttribute('draggable', true)
-    }, 500)
+    }, 200)
   }
   window.addEventListener('mouseup', handleMouseUp)
   e.target.addEventListener('dragend', handleMouseUp)
@@ -125,18 +127,32 @@ const handleMouseUp = () => {
 onMounted(() => {
   handleClick(playlistData[playingIndex.value])
 })
+let edVideoId = ref<null | string>(null)
 const handleClick = (item: PointItem) => {
-  playingIndex.value = playlistData.findIndex(
-    (i) => i.timestamps?.start === item.timestamps?.start
-  )
   // 获取视频元素（根据实际情况调整选择器）
   const videoPlayer = document.querySelector('video')
+  // 如果点击的看点属于不同的视频
+  if (item.videoId !== edVideoId.value && videoPlayer) {
+    // 更改videoPlayer的视频源
+    // 构建新的视频 URL
+    const newVideoUrl = `https://qi-1310338158.cos.ap-beijing.myqcloud.com/${item.videoId}.mp4` // 请根据实际情况调整 URL 格式
+    updateCurrentVideoId.value(item.videoId)
+    updateCurrentVideoUrl.value(newVideoUrl)
+    // 如果点击的看点属于不同的视频
+    // 更改 videoPlayer 的视频源
+    videoPlayer.src = newVideoUrl
+  }
+  console.log(playlistData.findIndex((i) => i.pointId === item.pointId))
+  updatePlayingIndex.value(
+    playlistData.findIndex((i) => i.pointId === item.pointId)
+  )
 
   // 如果视频元素存在且 item 有有效的时间戳
   if (videoPlayer && item.timestamps) {
     // 设置视频播放器的当前时间
     videoPlayer.currentTime = item.timestamps.start
   }
+  edVideoId.value = item.videoId
 }
 
 const showItemsList = ref(false) // 控制弹出层的显示
@@ -149,9 +165,9 @@ const handleSelectItem = (selectedItem: PointItem) => {
   handleClick(selectedItem)
   // 处理已播放项的选择逻辑，例如更新 playingIndex
   const newIndex = playlistData.findIndex(
-    (item) => item.timestamps?.start === selectedItem.timestamps?.start
+    (item) => item.pointId === selectedItem.pointId
   )
-  playingIndex.value = newIndex
+  updatePlayingIndex.value(newIndex)
   showItemsList.value = false // 选择后关闭弹出窗口
 }
 
@@ -235,7 +251,7 @@ watch(playingIndex, () => {
   background: linear-gradient(
     to top,
     transparent,
-    rgba(0, 0, 0, 0.7),
+    rgba(0, 0, 0, 0.8),
     transparent
   );
   .temporary-popup {
