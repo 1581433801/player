@@ -3,6 +3,7 @@ import { computed, onMounted, ref, toRefs, watch } from 'vue'
 import type { PointItem } from '@/types/home'
 import PlaylistItem from '@/views/Home/components/PlaylistItem.vue'
 import { usePlayerStore } from '@/stores' // 导入 Pinia store
+import draggable from 'vuedraggable'
 
 const {
   playingIndex,
@@ -193,7 +194,6 @@ watch(playingIndex, () => {
   <div ref="container" class="keypoint-list">
     <div v-if="showItemsList" class="temporary-popup">
       <!-- 已播放项列表 -->
-      <!-- 背景色为红色 -->
       <el-scrollbar>
         <div class="playedOrfuture-list">
           <PlaylistItem
@@ -215,19 +215,21 @@ watch(playingIndex, () => {
       </div>
     </div>
     <ul v-else>
-      <PlaylistItem
-        v-for="(item, index) in displayedPlaylist"
-        :key="index"
-        :item="item"
-        :isPlaying="item === currentPlayingItem"
-        :isDragOver="draggingOverIndex === index"
-        @drop="handleDrop($event, index)"
-        @dragover="handleDragOver($event, index)"
-        @dragleave="handleDragLeave"
-        @click="handleClick(item)"
-        @mousedown="handleMouseDown(index, $event)"
-        @dragstart="handleDragStart"
-      />
+      <draggable v-model="displayedPlaylist" item-key="index">
+        <template #item="{ index, element }">
+          <PlaylistItem
+            :item="element"
+            :isPlaying="element === currentPlayingItem"
+            :isDragOver="draggingOverIndex === index"
+            @drop="handleDrop($event, index)"
+            @dragover="handleDragOver($event, index)"
+            @dragleave="handleDragLeave"
+            @click="handleClick(element)"
+            @mousedown="handleMouseDown(index, $event)"
+            @dragstart="handleDragStart"
+          />
+        </template>
+      </draggable>
     </ul>
   </div>
 </template>
