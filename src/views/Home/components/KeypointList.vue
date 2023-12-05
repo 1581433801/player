@@ -59,15 +59,16 @@ const currentPlayingItem = computed(() => {
   //返回当前正在播放的项目
   return playlistData[playingIndex.value]
 })
-const handleDragStart = (e: DragEvent) => {
-  e.dataTransfer?.setData('text/plain', customLayerIndex.value.toString())
+const handleDragStart = () => {
+  // e.dataTransfer?.setData('text/plain', customLayerIndex.value.toString())
+  oldIndex.value = customLayerIndex.value
 }
-
-const handleDrop = (e: DragEvent, newIndex: number) => {
+const oldIndex = ref()
+const handleDrop = (e: DragEvent) => {
+  console.log(e)
   e.preventDefault()
-  const oldIndex = parseInt(e.dataTransfer!.getData('text/plain'))
-  if (oldIndex === customLayerIndex.value) {
-    customLayerIndex.value = newIndex
+  if (oldIndex.value === customLayerIndex.value) {
+    customLayerIndex.value = e.newIndex
   }
   // 拖拽完成，重置 draggingOverIndex
   draggingOverIndex.value = -1
@@ -108,7 +109,9 @@ const handleMouseDown = (index: number, e: any) => {
     }, 200)
   }
   window.addEventListener('mouseup', handleMouseUp)
+  window.addEventListener('touchend', handleMouseUp)
   e.target.addEventListener('dragend', handleMouseUp)
+  e.target.addEventListener('end', handleMouseUp)
 }
 
 const handleMouseUp = () => {
@@ -215,18 +218,22 @@ watch(playingIndex, () => {
       </div>
     </div>
     <ul v-else>
-      <draggable v-model="displayedPlaylist" item-key="index">
+      <draggable
+        v-model="displayedPlaylist"
+        item-key="index"
+        @start="handleDragStart"
+        @end="handleDrop($event)"
+      >
         <template #item="{ index, element }">
           <PlaylistItem
             :item="element"
             :isPlaying="element === currentPlayingItem"
             :isDragOver="draggingOverIndex === index"
-            @drop="handleDrop($event, index)"
             @dragover="handleDragOver($event, index)"
             @dragleave="handleDragLeave"
             @click="handleClick(element)"
             @mousedown="handleMouseDown(index, $event)"
-            @dragstart="handleDragStart"
+            @touchstart="handleMouseDown(index, $event)"
           />
         </template>
       </draggable>
