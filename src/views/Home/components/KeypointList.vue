@@ -64,7 +64,7 @@ const handleDragStart = () => {
   oldIndex.value = customLayerIndex.value
 }
 const oldIndex = ref()
-const handleDrop = (e: DragEvent) => {
+const handleDrop = (e: any) => {
   console.log(e)
   e.preventDefault()
   if (oldIndex.value === customLayerIndex.value) {
