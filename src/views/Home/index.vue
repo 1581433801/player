@@ -17,13 +17,14 @@ const initPlayer = (videoUrl: string) => {
     videoInit: true,
     closeInactive: false,
     autoplay: true,
-    videoFillMode: 'cover',
     loop: true,
     ignores: ['cssfullscreen'],
     fullscreenTarget: playerDom as HTMLElement,
-    height: 800,
-    width: '100%',
-    marginControls: true
+    width: '100vw',
+    height: '100vh',
+    marginControls: true,
+    fitVideoSize: 'fixed',
+    videoFillMode: 'contain'
   })
 
   player.currentTime = store.lastPlayedTime.value
@@ -102,9 +103,7 @@ const trackPlaybackProgress = () => {
   justify-content: center;
   .player {
     display: flex;
-    margin-top: 50px;
-    width: 74%;
-    height: 800px;
+    width: 100%;
     position: relative;
     #mse {
       position: relative; /* 设置相对定位以便于定位看点列表组件 */
