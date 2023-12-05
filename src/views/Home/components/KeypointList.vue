@@ -245,11 +245,9 @@ watch(playingIndex, () => {
   position: absolute;
   width: 280px;
   height: 450px;
-  top: 180px;
-  right: 0;
   z-index: 100;
   overflow: hidden;
-  // background-color: rgba(0, 0, 0, 0.4); /* 半透明背景 */
+  // background-color: rgba(0, 0, 0, 0.9); /* 半透明背景 */
   background: linear-gradient(
     to top,
     transparent,

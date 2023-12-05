@@ -24,7 +24,8 @@ const initPlayer = (videoUrl: string) => {
     height: '100vh',
     marginControls: true,
     fitVideoSize: 'fixed',
-    videoFillMode: 'contain'
+    videoFillMode: 'contain',
+    playbackRate: []
   })
 
   player.currentTime = store.lastPlayedTime.value
@@ -103,8 +104,9 @@ const trackPlaybackProgress = () => {
   justify-content: center;
   .player {
     display: flex;
+    align-items: center; /* 垂直居中 */
+    justify-content: flex-end; /* 使子元素靠右排列，因为您想要的是靠右对齐 */
     width: 100%;
-    position: relative;
     #mse {
       position: relative; /* 设置相对定位以便于定位看点列表组件 */
       z-index: 1; /* 确保视频播放器在看点列表组件之下 */
