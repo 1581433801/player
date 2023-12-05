@@ -32,7 +32,173 @@ const initPlayer = (videoUrl: string) => {
   trackPlaybackProgress()
 }
 onMounted(async () => {
-  const res = await getPointList()
+  const res = {
+    status: 'success',
+    title: '混合媒体展示',
+    videoBaseUrl: 'https://qi-1310338158.cos.ap-beijing.myqcloud.com',
+    keypoints: [
+      {
+        videoId: 'video01',
+        pointId: 'point1',
+        type: 'video',
+        description: '1 连续射门机会',
+        timestamps: {
+          start: 2,
+          end: 5
+        }
+      },
+      {
+        videoId: 'video01',
+        pointId: 'point2',
+        type: 'video',
+        description: '2 比赛时刻绝杀',
+        timestamps: {
+          start: 6,
+          end: 8
+        }
+      },
+      {
+        videoId: 'video01',
+        pointId: 'point3',
+        type: 'video',
+        description: '3 观众欢呼',
+        timestamps: {
+          start: 9,
+          end: 11
+        }
+      },
+      {
+        videoId: 'video01',
+        pointId: 'point4',
+        type: 'video',
+        description: '4 连续射门机会',
+        timestamps: {
+          start: 12,
+          end: 14
+        }
+      },
+      {
+        videoId: 'video01',
+        pointId: 'point5',
+        type: 'video',
+        description: '5 比赛时刻绝杀',
+        timestamps: {
+          start: 26,
+          end: 29
+        }
+      },
+      {
+        videoId: 'video01',
+        pointId: 'point6',
+        type: 'video',
+        description: '6 观众欢呼',
+        timestamps: {
+          start: 32,
+          end: 35
+        }
+      },
+      {
+        videoId: 'video01',
+        pointId: 'point7',
+        type: 'video',
+        description: '7 连续射门机会',
+        timestamps: {
+          start: 38,
+          end: 41
+        }
+      },
+      {
+        videoId: 'video01',
+        pointId: 'point8',
+        type: 'video',
+        description: '8 比赛时刻绝杀',
+        timestamps: {
+          start: 44,
+          end: 47
+        }
+      },
+      {
+        videoId: 'video02',
+        pointId: 'point9',
+        type: 'video',
+        description: '9 观众欢呼',
+        timestamps: {
+          start: 4,
+          end: 5
+        }
+      },
+      {
+        videoId: 'video02',
+        pointId: 'point10',
+        type: 'video',
+        description: '10 连续射门机会',
+        timestamps: {
+          start: 6,
+          end: 8
+        }
+      },
+      {
+        videoId: 'video02',
+        pointId: 'point11',
+        type: 'video',
+        description: '11 比赛时刻绝杀',
+        timestamps: {
+          start: 9,
+          end: 11
+        }
+      },
+      {
+        videoId: 'video02',
+        pointId: 'point12',
+        type: 'video',
+        description: '12 观众欢呼',
+        timestamps: {
+          start: 12,
+          end: 14
+        }
+      },
+      {
+        videoId: 'video02',
+        pointId: 'point13',
+        type: 'video',
+        description: '13 观众欢呼',
+        timestamps: {
+          start: 26,
+          end: 29
+        }
+      },
+      {
+        videoId: 'video02',
+        pointId: 'point14',
+        type: 'video',
+        description: '14 观众欢呼',
+        timestamps: {
+          start: 32,
+          end: 35
+        }
+      },
+      {
+        videoId: 'video02',
+        pointId: 'point15',
+        type: 'video',
+        description: '15 观众欢呼',
+        timestamps: {
+          start: 38,
+          end: 41
+        }
+      },
+      {
+        videoId: 'video02',
+        pointId: 'point16',
+        type: 'video',
+        description: '16 观众欢呼',
+        timestamps: {
+          start: 44,
+          end: 47
+        }
+      }
+    ]
+  }
   pointList.value = res.keypoints
   if (pointList.value.length > 0) {
     const firstPoint = pointList.value[0]
