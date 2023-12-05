@@ -78,7 +78,11 @@ const handleDragLeave = (event: DragEvent) => emit('dragleave', event)
   font-size: 20px;
   line-height: 58px;
   transition: all 0.3s ease;
-  &.hover-effect:hover {
+}
+
+/* 使用媒体查询只在指针为精细（如鼠标）并支持 hover 的设备上应用这些样式 */
+@media (hover: hover) and (pointer: fine) {
+  .pointItem.hover-effect:hover {
     background-color: rgba(224, 247, 250, 0.5); /* 浅蓝色背景 */
     font-weight: bold; /* 字体加粗 */
     color: #1d5bb8; /* 深蓝色字体 */
