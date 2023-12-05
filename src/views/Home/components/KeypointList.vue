@@ -92,21 +92,21 @@ const handleMouseDown = (index: number, e: any) => {
       listToShow.value = playlistData.slice(0, playingIndex.value) // 设置为已播放项列表
       showItemsList.value = true // 显示列表
       listTypeToShow.value = 'played'
-    }, 200)
+    }, 500)
   } else if (index > customLayerIndex.value) {
     // 如果长按未播放项
     longPressTimer.value = setTimeout(() => {
       listToShow.value = playlistData.slice(playingIndex.value + 1) // 设置为未播放项列表
       showItemsList.value = true // 显示列表
       listTypeToShow.value = 'upcoming'
-    }, 200)
+    }, 500)
   } else if (index === customLayerIndex.value) {
     // 如果长按当前播放项
     longPressTimer.value = setTimeout(() => {
       isLongPress.value = true
       e.target.classList.add('draggable')
       e.target.setAttribute('draggable', true)
-    }, 200)
+    }, 500)
   }
   window.addEventListener('mouseup', handleMouseUp)
   window.addEventListener('touchend', handleMouseUp)
@@ -251,7 +251,7 @@ watch(playingIndex, () => {
   justify-content: center;
   position: absolute;
   width: 280px;
-  height: 450px;
+  height: 100vh;
   z-index: 100;
   overflow: hidden;
   // background-color: rgba(0, 0, 0, 0.9); /* 半透明背景 */
