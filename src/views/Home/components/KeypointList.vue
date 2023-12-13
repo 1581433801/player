@@ -195,26 +195,28 @@ watch(playingIndex, () => {
 </script>
 <template>
   <div ref="container" class="keypoint-list">
-    <div v-if="showItemsList" class="temporary-popup">
-      <!-- 已播放项列表 -->
-      <el-scrollbar>
-        <div class="playedOrfuture-list">
+    <div v-if="showItemsList">
+      <div class="temporary-popup">
+        <!-- 已播放项列表 -->
+        <el-scrollbar>
+          <div class="playedOrfuture-list">
+            <PlaylistItem
+              v-for="item in listToShow"
+              :key="item.timestamps?.start"
+              :item="item"
+              :isPlaying="item === currentPlayingItem"
+              @click="handleSelectItem(item)"
+            />
+          </div>
+        </el-scrollbar>
+        <!-- 当前播放项 -->
+        <div class="current-playing-item">
           <PlaylistItem
-            v-for="item in listToShow"
-            :key="item.timestamps?.start"
-            :item="item"
-            :isPlaying="item === currentPlayingItem"
-            @click="handleSelectItem(item)"
+            :item="currentPlayingItem"
+            :isPlaying="true"
+            @click="handleCloseTemporaryList"
           />
         </div>
-      </el-scrollbar>
-      <!-- 当前播放项 -->
-      <div class="current-playing-item">
-        <PlaylistItem
-          :item="currentPlayingItem"
-          :isPlaying="true"
-          @click="handleCloseTemporaryList"
-        />
       </div>
     </div>
     <ul v-else>
